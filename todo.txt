@@ -1,0 +1,5 @@
+Today) Try authorized actions using protected endpoint. Fix the types so i dont spam types everywhere and have one central area. Fix the docker stuff and have a full docker-compose created. Add a navbar to the frontend.
+
+
+
+

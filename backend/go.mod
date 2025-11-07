@@ -1,6 +1,6 @@
 module github.com/AaronTimony/JP_Subs_API/backend
 
-go 1.23.0
+go 1.24.0
 
 toolchain go1.24.9
 
@@ -13,6 +13,7 @@ require (
 	github.com/redis/go-redis/v9 v9.16.0
 	github.com/sirupsen/logrus v1.9.3
 	golang.org/x/crypto v0.37.0
+	golang.org/x/time v0.14.0
 )
 
 require (

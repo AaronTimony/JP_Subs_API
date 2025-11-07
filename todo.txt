@@ -1,4 +1,8 @@
-Today) Try authorized actions using protected endpoint. Fix the types so i dont spam types everywhere and have one central area. Fix the docker stuff and have a full docker-compose created. Add a navbar to the frontend.
+Today)
+
+Current overall goals: Rate limiting, add metadata to api so that we can add parameters for searching.
+
+After i do these things, all i need is to create a nice readme and then make my frotnend look nice so i can put into production.
 
 
 

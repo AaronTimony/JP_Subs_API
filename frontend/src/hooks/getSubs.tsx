@@ -1,11 +1,12 @@
 import {useQuery} from "@tanstack/react-query"
 
-export function useGetSubs({searchQuery}: {searchQuery: string}) {
+export function useGetSubs({searchQuery, limit, deckID}: {searchQuery?: string, limit?: number}) {
 
   const getAllSubs = useQuery({
     queryKey: ["Available"],
     queryFn: async () => {
       const response = await fetch("http://localhost:8000/subtitles/getSubs")
+
       if (!response.ok) {
         throw new Error("Failed to fetch subtitle files")
       }
@@ -16,10 +17,14 @@ export function useGetSubs({searchQuery}: {searchQuery: string}) {
     }
   })
 
+  const params = new URLSearchParams()
+  if (searchQuery) params.append("search", searchQuery)
+  if (limit) params.append("limit", limit.toString())
+
   const searchSubs = useQuery({
     queryKey: ["Search", searchQuery],
     queryFn: async () => {
-      const response = await fetch(`http://localhost:8000/subtitles/searchSubs?search=${searchQuery}`)
+      const response = await fetch(`http://localhost:8000/subtitles/searchSubs?${params.toString()}`)
 
       if (!response.ok) {
         throw new Error("Could not search subtitles")
@@ -32,6 +37,25 @@ export function useGetSubs({searchQuery}: {searchQuery: string}) {
     enabled: !!searchQuery
   })
 
-  return {searchSubs, getAllSubs}
+  const newParams = new URLSearchParams()
+  if (deckID) newParams.append("DeckID", deckID)
+
+  const queryForSubs = useQuery({
+    queryKey: ["Search", searchQuery],
+    queryFn: async () => {
+      const response = await fetch(`http://localhost:8000/subtitles/useAPI?${newParams.toString()}`)
+
+      if (!response.ok) {
+        throw new Error("Could not search subtitles")
+      }
+
+      const data = await response.json()
+
+      return data
+    },
+    enabled: !!searchQuery
+  })
+
+  return {searchSubs, getAllSubs, queryForSubs}
 }
 

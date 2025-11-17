@@ -1,9 +1,11 @@
-Today)
-
-Current overall goals: Rate limiting, add metadata to api so that we can add parameters for searching.
+Today) Add more metadata to api so that we can add parameters for searching.
 
 After i do these things, all i need is to create a nice readme and then make my frotnend look nice so i can put into production.
 
+Metadata plan:
 
+So I need to make accordians on the frontpage as I think those are best ways of searching. Also make the navbar nicer.
+
+Need a way for users to download subtitles directly on the website
 
 

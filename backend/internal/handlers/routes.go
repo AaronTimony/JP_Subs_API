@@ -13,11 +13,12 @@ import (
 func Handler(r *chi.Mux, pool *pgxpool.Pool) {
 	r.Use(chimiddle.StripSlashes)
 	r.Use(CORSMiddleware)
-	r.Use(rateLimiterMiddleware(rate.Limit(10), 20))
+	r.Use(rateLimiterMiddleware(rate.Limit(10), 10))
 
 	r.Route("/subtitles", func(router chi.Router) {
 		router.Get("/getSubs", services.RetrieveSubs(pool))
 		router.With(validateToken).Post("/upload", services.UploadSub(pool))
+		router.Get("/useAPI", services.GetSubsFromQuery(pool))
 		router.Get("/searchSubs", services.SearchSubs(pool))
 	})
 

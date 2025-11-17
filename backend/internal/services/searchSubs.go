@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/AaronTimony/JP_Subs_API/backend/internal/repository"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -14,6 +15,19 @@ import (
 func SearchSubs(pool *pgxpool.Pool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		repo := repository.New(pool)
+		ctx := context.Background()
+
+		limitStr := r.URL.Query().Get("limit")
+		limit := 100 // We hardcode this value to prevent any potential errors with empty strings
+		if limitStr != "" {
+			var err error
+			limit, err = strconv.Atoi(limitStr)
+			if err != nil {
+				log.Error("Error converting limit:", err)
+				http.Error(w, "Invalid limit parameter", http.StatusBadRequest)
+				return
+			}
+		}
 
 		searchTerm := r.URL.Query().Get("search")
 		if searchTerm == "" {
@@ -25,7 +39,10 @@ func SearchSubs(pool *pgxpool.Pool) http.HandlerFunc {
 			Valid:  true,
 		}
 
-		names, err := repo.SearchNames(context.Background(), pgSearchTerm)
+		names, err := repo.SearchNames(ctx, repository.SearchNamesParams{
+			Limit:      int32(limit),
+			Searchterm: pgSearchTerm,
+		})
 		if err != nil {
 			log.Error("Could not use function searchNames", err)
 			return

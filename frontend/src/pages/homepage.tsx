@@ -1,7 +1,6 @@
 import {useState} from "react"
 import {SearchBar} from "../components/searchBar.tsx"
 import ShowSubtitles from "../components/showSubtitles.tsx"
-import AddSubtitles from "../components/addFile.tsx"
 import {useGetSubs} from "../hooks/getSubs.tsx"
 
 function HomePage() {
@@ -20,7 +19,6 @@ function HomePage() {
       ) : (
         <ShowSubtitles names={searchSubs.data}/>
         )}
-      <AddSubtitles />
     </>
   )
 }

@@ -78,8 +78,6 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]string{"error": "Invalid request body"})
 	}
 
-	log.Info(u)
-
 	if len(u.Username) < 8 || len(u.Password) < 8 {
 		err := http.StatusNotAcceptable
 		http.Error(w, "Username/Password must be at least 8 characters", err)

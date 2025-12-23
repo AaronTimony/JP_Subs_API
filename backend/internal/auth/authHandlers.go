@@ -3,7 +3,6 @@ package auth
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"os"
 	"time"
@@ -44,6 +43,7 @@ func hashPassword(password string) (string, error) {
 
 func checkPasswordHash(password string, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	log.Info(err, "ASDBHASDK")
 	return err == nil
 }
 
@@ -91,8 +91,12 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	exists, err := repo.CheckUserExists(context.Background(), u.Username)
-	if err != nil || exists != false {
-		log.Error("Username already exists", err)
+	if err != nil {
+		log.Error("error in checking for user existence", err)
+		return
+	}
+	if len(exists.ID) > 0 {
+		log.Error("Username already exists")
 		return
 	}
 
@@ -116,8 +120,6 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 		log.Error("Could not register user to database", err)
 		return
 	}
-
-	fmt.Println("User Registered Successfully!")
 }
 
 func (h *Handler) LoginUser(w http.ResponseWriter, r *http.Request) {
@@ -133,13 +135,27 @@ func (h *Handler) LoginUser(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 
-	_, err := repo.CheckUserExists(context.Background(), username)
+	exists, err := repo.CheckUserExists(context.Background(), username)
+	if err != nil {
+		status := http.StatusUnauthorized
+		http.Error(w, "Invalid Username or Password", status)
+		log.Error("Error checking user existence", err)
+		return
+	}
+
+	if len(exists.ID) > 0 {
+		status := http.StatusUnauthorized
+		http.Error(w, "Invalid Username or Password", status)
+		log.Error("Username not found", err)
+	}
+
 	hashedPassword, err := hashPassword(password)
 
+	log.Info(hashedPassword)
 	if err != nil || !checkPasswordHash(password, hashedPassword) {
 		er := http.StatusUnauthorized
 		http.Error(w, "Invalid Username or Password", er)
-		log.Error("Username not found", err)
+		log.Error("Passwords don't match", err)
 		return
 	}
 
@@ -164,6 +180,48 @@ func (h *Handler) LoginUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]string{
 		"message": "Login successful",
 		"token":   tokenString,
+	})
+	return
+}
+
+func (h *Handler) CheckCookie(w http.ResponseWriter, r *http.Request) {
+	// function largely re-uses code from the validateToken code
+
+	w.Header().Set("Content-Type", "application/json")
+	if r.Method != http.MethodGet {
+		err := http.StatusMethodNotAllowed
+		log.Info("Triggered Here!")
+		http.Error(w, "invalid request method", err)
+		log.Info("Must use a GET request")
+		return
+	}
+
+	cookie, err := r.Cookie("auth_token")
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"authenticated": false,
+		})
+		return
+	}
+
+	token, err := jwt.Parse(cookie.Value, func(token *jwt.Token) (interface{}, error) {
+		log.Info("Triggered Here")
+		return []byte(secretKey), nil
+	})
+
+	if err != nil || !token.Valid {
+		log.Info("Triggered Here!!!!!")
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"authenticated": false,
+		})
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"authenticated": true,
 	})
 	return
 }

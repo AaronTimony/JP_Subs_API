@@ -1,4 +1,4 @@
-import {useMutation} from "@tanstack/react-query"
+import {useQuery, useMutation} from "@tanstack/react-query"
 
 
 export function useAuth() {
@@ -27,7 +27,6 @@ export function useAuth() {
       const response = await fetch("http://localhost:8000/auth/Login", {
         method: "POST",
         credentials: "include",
-        headers: {"Content-Type": "application/json"},
         body: formData
       })
 
@@ -39,9 +38,33 @@ export function useAuth() {
 
       return data
     },
-
-    onSuccess: (data) => {console.log("User successfully logged in!", data)}
+    onSuccess: () => { console.log("Successful Login") }
   })
 
   return {registerUser, loginUser}
+}
+
+export function useCookieCheck() {
+  const checkCookie = useQuery({
+    queryKey: ["Cookie"],
+    queryFn: async () => {
+      const response = await fetch("http://localhost:8000/auth/Cookie", {
+        credentials: "include"
+      })
+
+      if (response.status == 401) {
+
+        return {"authenticated" : false}
+      }
+      if (!response.ok) {
+        throw new Error("Cookie is not available")
+      }
+
+      const data = await response.json()
+
+      return data
+    }
+  })
+
+  return {checkCookie}
 }

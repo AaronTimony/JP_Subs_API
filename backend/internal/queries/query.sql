@@ -4,15 +4,15 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 RETURNING id, file_name, content;
 
 -- name: GetSubtitleNames :many
-SELECT id, file_name, title, episode, deck_id FROM subtitles;
+SELECT id, file_name, title, episode, deck_id, content FROM subtitles;
 
 -- name: SearchNames :many
-SELECT id, file_name, title, deck_id FROM subtitles
+SELECT id, file_name, title, deck_id, content FROM subtitles
 WHERE title ILIKE '%' || sqlc.narg(searchTerm) || '%'
 LIMIT $1;
 
 -- name: CheckUserExists :one
-SELECT EXISTS(SELECT 1 FROM users WHERE username = $1);
+SELECT * FROM users WHERE username = $1;
 
 -- name: CheckEmailExists :one
 SELECT EXISTS(SELECT 1 FROM users WHERE email = $1);
@@ -37,3 +37,5 @@ ORDER BY episode;
 -- name: GetSingleEpisode :many
 SELECT id, title, content FROM subtitles
 WHERE deck_id = $1 AND episode = $2;
+
+

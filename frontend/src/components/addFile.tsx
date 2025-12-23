@@ -70,7 +70,7 @@ export default function AddSubtitles() {
           type="text"
           value={metaData.title}
           onChange={handleInputChange}
-          placeholder="e.g. Breaking Bad"
+          placeholder="e.g. Attack on Titan"
           required
         />
       </div>

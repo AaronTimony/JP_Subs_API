@@ -26,5 +26,6 @@ func Handler(r *chi.Mux, pool *pgxpool.Pool) {
 	r.Route("/auth", func(router chi.Router) {
 		router.Post("/Register", h.Register)
 		router.Post("/Login", h.LoginUser)
+		router.Get("/Cookie", h.CheckCookie)
 	})
 }

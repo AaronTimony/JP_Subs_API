@@ -2,25 +2,32 @@ import {useState} from "react"
 import {SearchBar} from "../components/searchBar.tsx"
 import ShowSubtitles from "../components/showSubtitles.tsx"
 import {useGetSubs} from "../hooks/getSubs.tsx"
+import "../css/homepage.css"
+import { ClipLoader } from "react-spinners"
 
 function HomePage() {
   const [pageSearchQuery, setPageSearchQuery] = useState<string>("")
   const {getAllSubs, searchSubs} = useGetSubs({searchQuery: pageSearchQuery});
 
-  if (getAllSubs.isLoading || (pageSearchQuery && searchSubs.isLoading)) return <h1> LOADING... </h1>
+  if (getAllSubs.isLoading || (pageSearchQuery && searchSubs.isLoading)) return (
+    <div className="loading-container">
+      <ClipLoader color="#0000FF" size={50} />
+    </div>
+  )
 
   return (
     <>
-      <h1> Japanese Subtitles Public API  </h1>
-      <p> An API for searching and accessing Japanese subtitles </p>
-        <SearchBar setPageSearchQuery={setPageSearchQuery} detail={"Subtitle Files..."} />
+      <div className="homepage-header">
+        <h1 className="homepage-title">Japanese Subtitles Public API</h1>
+        <p className="homepage-description">An API for searching and accessing Japanese subtitles</p>
+      </div>
+      <SearchBar setPageSearchQuery={setPageSearchQuery} detail={"Subtitle Files..."} />
       {!pageSearchQuery ? (
         <ShowSubtitles names={getAllSubs.data}/>
       ) : (
-        <ShowSubtitles names={searchSubs.data}/>
+          <ShowSubtitles names={searchSubs.data}/>
         )}
     </>
   )
 }
-
 export default HomePage;

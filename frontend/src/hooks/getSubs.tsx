@@ -1,6 +1,6 @@
 import {useQuery} from "@tanstack/react-query"
 
-export function useGetSubs({searchQuery, limit, deckID}: {searchQuery?: string, limit?: number}) {
+export function useGetSubs({searchQuery, limit, deckID}: {searchQuery?: string, limit?: number, deckID?: number}) {
 
   const getAllSubs = useQuery({
     queryKey: ["Available"],
@@ -38,7 +38,7 @@ export function useGetSubs({searchQuery, limit, deckID}: {searchQuery?: string, 
   })
 
   const newParams = new URLSearchParams()
-  if (deckID) newParams.append("DeckID", deckID)
+  if (deckID) newParams.append("DeckID", deckID.toString())
 
   const queryForSubs = useQuery({
     queryKey: ["Search", searchQuery],

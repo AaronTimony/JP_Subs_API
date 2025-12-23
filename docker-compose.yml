@@ -14,6 +14,24 @@ services:
       - "5433:5432"
     restart: unless-stopped
 
+  migrations:
+    container_name: jp_api_migrations
+    image: migrate/migrate
+    depends_on:
+      db:
+        condition: service_healthy
+
+    volumes:
+      - ./backend/migrations:/migrations
+
+    command: [
+      "-path", "/migrations",
+      "-database", "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5433/${POSTGRES_DB}?sslmode=disable",
+      "up"
+    ]
+
+    restart: on-failure
+
   backend:
     container_name: jp_api_backend
     build:
@@ -34,11 +52,11 @@ services:
   frontend:
     container_name: jp_api_frontend
     build:
-      context: ./frotnend
+      context: ./frontend
       dockerfile: Dockerfile
 
     ports: 
-      - "5173:5173"
+      - "80:80"
     depends_on:
      - backend
 
@@ -47,5 +65,3 @@ services:
 
 volumes:
   postgres_data:
-
-

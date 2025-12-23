@@ -1,0 +1,54 @@
+.navbar {
+  background-color: #333;
+  padding: 0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-radius: 30px;
+}
+
+.jp-flag {
+  height: 50px;
+}
+
+.navbar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.navbar-logo {
+  color: white;
+  font-size: 40px;
+  font-weight: bold;
+
+  text-decoration: none;
+}
+
+.navbar-menu {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 30px;
+}
+
+.nav-link {
+  color: lightgreen;
+  text-decoration: none;
+  padding: 20px 0;
+  font-size: 28px;
+  display: block;
+  transition: color 0.3s;
+}
+
+.nav-link:hover {
+  color: darkgreen
+
+}
+
+.nav-status {
+  color:lightgreen;
+  padding: 20px 0;
+}
